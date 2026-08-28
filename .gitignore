@@ -28,3 +28,7 @@ scorer_results/
 
 # Assessment data
 data/
+
+.venv/
+__pycache__/
+.ipynb_checkpoints/
