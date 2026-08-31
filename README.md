@@ -1,55 +1,45 @@
 # Spotter Freight Rate Prediction
 
-Machine learning solution developed for the Spotter.AI Machine Learning Engineer assessment.
+Final machine-learning solution for the Spotter.AI Machine Learning Engineer assessment.
 
-## Overview
+## Approach
 
-This project develops a machine learning model to predict freight load rates using historical labelled freight data.
+- Cleaned invalid/missing values without target leakage.
+- Converted dates into calendar and cyclic seasonal features.
+- Created route features.
+- Used a chronological validation split: January-August 2025 for training and September-October 2025 for holdout evaluation.
+- Used CatBoost regression for nonlinear freight-rate relationships and categorical variables.
+- Retrained the final validation model on all January-October labelled data.
+- Generated predictions for all 12,000 validation loads.
+- Used a separate schema-compatible December model because the supplied December chart input contains only:
+  `pickup, delivery, distance, equipment, weight, date, predicted_rate`.
+- Ran the provided scorer successfully.
 
-The project covers the complete machine learning workflow:
+## Run
 
-- Exploratory data analysis
-- Data quality assessment
-- Data preprocessing
-- Feature engineering
-- Model development
-- Time-based validation
-- Model comparison
-- Final model training
-- Validation predictions
-- December forecasting
-- Model evaluation and reporting
+From the project root:
 
-## Dataset
+```bash
+python -m pip install -r requirements.txt
+jupyter notebook notebooks/01_spotter_freight_rate_final.ipynb
+```
 
-The development dataset contains historical freight loads with information including:
+Run all cells from top to bottom.
 
-- Pickup and delivery locations
-- Pickup and delivery coordinates
-- Distance
-- Equipment type
-- Weight
-- Date
-- Market index
-- Quote signal
-- Posted freight rate
+The notebook creates:
 
-The target variable is:
+- `validation_predictions.csv`
+- completed `data/december-chart-inputs.csv`
+- `scorer_results/candidate_december.png`
 
-`posted_rate`
+The supplied scorer can also be run manually:
 
-The supplied validation dataset contains future loads for which predictions must be generated.
+```bash
+python score.py   --predictions validation_predictions.csv   --december-predictions data/december-chart-inputs.csv
+```
 
-## Project Structure
+## Important
 
-```text
-spotter-freight-rate/
-├── data/
-├── notebooks/
-├── src/
-├── outputs/
-├── reports/
-├── score.py
-├── requirements.txt
-├── .gitignore
-└── README.md
+Do not add `rate_per_mile` or any other feature derived from `posted_rate`; that would leak the target.
+
+The assessment requires the repository, `validation_predictions.csv`, a PDF/DOCX report containing the validation/split approach and December chart, and a 2–3 minute Loom walkthrough.
